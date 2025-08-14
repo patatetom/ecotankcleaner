@@ -83,7 +83,7 @@ fi
 
 
 # check page before possible cleaning
-readonly data_check=AAAAGwFARUpMIDEyODQuNApARUpMICAgICAKG0AbQBsoUggAAFJFTU9URTFUSQgAAAfoCB4HOQ9KUwQAAAAAAE5DAgAAABsAAAANCg0KGyhSCAAAUkVNT1RFMVZJAgAAAExEAAAbAAAADBtAG0AbKFIIAABSRU1PVEUxSkUBAAAbAAAA
+readonly data_check="AAAAGwFARUpMIDEyODQuNApARUpMICAgICAKG0AbQBsoUggAAFJFTU9URTFUSQgAAAfoCB4HOQ9KUwQAAAAAAE5DAgAAABsAAAANCg0KGyhSCAAAUkVNT1RFMVZJAgAAAExEAAAbAAAADBtAG0AbKFIIAABSRU1PVEUxSkUBAAAbAAAA"
 if [ ! "$force_clean" ]
 then
 
@@ -98,7 +98,7 @@ fi
 
 
 # print heads cleaning and check page
-readonly data_clean=AAAAGwFARUpMIDEyODQuNApARUpMICAgICAKG0AbQBsoUggAAFJFTU9URTFUSQgAAAfoCB4HOgZDSAIAAAAbAAAA
+readonly data_clean="AAAAGwFARUpMIDEyODQuNApARUpMICAgICAKG0AbQBsoUggAAFJFTU9URTFUSQgAAAfoCB4HOgZDSAIAAAAbAAAA"
 [ "$force_clean" ] || read -sp "clean the print nozzles ? "
 echo $'\n'"cleaning in progress : please wait..."
 echo "(a nozzle check page will be printed after cleaning)"
