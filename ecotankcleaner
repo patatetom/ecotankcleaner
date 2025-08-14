@@ -50,34 +50,40 @@ options:
  -c prints a nozzle check page before cleaning
  -C starts cleaning the nozzles without a prior check page
 ~~~
-	exit
+	exit 1
 }
 
+
+# global variables
+force_check=""
+force_clean=""
+ecotank=""
 
 # option processing
 while getopts ":cC" option
 do
 	case $option in
-		c) force_check=yes;;
-		C) force_clean=yes;;
+		c) force_check="yes";;
+		C) force_clean="yes";;
 		\?) usage;;
 	esac
 done
 shift $(( $OPTIND - 1 ))
-[ -n "$1" ] || usage
-ecotank=$1
+[[ $# -eq 0 ]] && echo "error: printer address required" >&2 && usage
+[[ $# -gt 1 ]] && echo "error: too many arguments" >&2 && usage
+ecotank="$1"
 
 
 # simple connectivity test
 if ! ping -4 -c 1 -w 3 ${ecotank} &> /dev/null
 then
-	cat > /dev/stderr <<< "error: ${ecotank} is not responding to ping"
+	echo "error: ${ecotank} is not responding to ping" >&2
 	exit 1
 fi
 
 
 # check page before possible cleaning
-data_check=AAAAGwFARUpMIDEyODQuNApARUpMICAgICAKG0AbQBsoUggAAFJFTU9URTFUSQgAAAfoCB4HOQ9KUwQAAAAAAE5DAgAAABsAAAANCg0KGyhSCAAAUkVNT1RFMVZJAgAAAExEAAAbAAAADBtAG0AbKFIIAABSRU1PVEUxSkUBAAAbAAAA
+readonly data_check=AAAAGwFARUpMIDEyODQuNApARUpMICAgICAKG0AbQBsoUggAAFJFTU9URTFUSQgAAAfoCB4HOQ9KUwQAAAAAAE5DAgAAABsAAAANCg0KGyhSCAAAUkVNT1RFMVZJAgAAAExEAAAbAAAADBtAG0AbKFIIAABSRU1PVEUxSkUBAAAbAAAA
 if [ ! "$force_clean" ]
 then
 
@@ -92,7 +98,7 @@ fi
 
 
 # print heads cleaning and check page
-data_clean=AAAAGwFARUpMIDEyODQuNApARUpMICAgICAKG0AbQBsoUggAAFJFTU9URTFUSQgAAAfoCB4HOgZDSAIAAAAbAAAA
+readonly data_clean=AAAAGwFARUpMIDEyODQuNApARUpMICAgICAKG0AbQBsoUggAAFJFTU9URTFUSQgAAAfoCB4HOgZDSAIAAAAbAAAA
 [ "$force_clean" ] || read -sp "clean the print nozzles ? "
 echo $'\n'"cleaning in progress : please wait..."
 echo "(a nozzle check page will be printed after cleaning)"
