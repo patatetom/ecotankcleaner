@@ -1,0 +1,106 @@
+#!/usr/bin/bash
+
+
+# this bash script allows you to check and clean the print heads of an
+# Epson EcoTank 2710 printer accessible via network (USB not supported).
+# the data sent to the printer (using the netsend function below) was
+# collected using tshark.
+# tests have only been performed on the 2710 model : please let me know via
+# an issue if the script works on other models ;-)
+
+
+# use python
+netsend() {
+	python3 -c "
+
+import socket, sys
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect(('${ecotank}', 9100))
+s.send(sys.stdin.buffer.read())
+s.close()
+
+	"
+}
+
+
+# use bash
+# comment next line to use python insteed of bash pseudo-device
+netsend() { cat -> /dev/tcp/${ecotank}/9100; }
+
+
+# uncomment next line to use socat
+# netsend() { socat -4 -u STDIN TCP:${ecotank}:9100; }
+# uncomment next line to use netcat-openbsd
+# netsend() { echo netcat -4 -N ${ecotank} 9100; }
+# uncomment next line to use netcat-nmap
+# netsend() { ncat -4 ${ecotank} 9100; }
+# uncomment next line to use gnu-netcat
+# netsend() { nc -4 -c ${ecotank} 9100; }
+# uncomment next line to debug
+netsend() { base64; }
+
+
+# user manual
+usage() {
+	cat <<~~~
+usage: $( basename "$0" ) [-c] [-C] ecotank
+argument:
+ ecotank is the address or name of the printer
+options:
+ -c prints a nozzle check page before cleaning
+ -C starts cleaning the nozzles without a prior check page
+~~~
+	exit
+}
+
+
+# option processing
+while getopts ":cC" option
+do
+	case $option in
+		c) force_check=yes;;
+		C) force_clean=yes;;
+		\?) usage;;
+	esac
+done
+shift $(( $OPTIND - 1 ))
+[ -n "$1" ] || usage
+ecotank=$1
+
+
+# simple connectivity test
+if ! ping -4 -c 1 -w 3 ${ecotank} &> /dev/null
+then
+	cat > /dev/stderr <<< "error: ${ecotank} is not responding to ping"
+	exit 1
+fi
+
+
+# check page before possible cleaning
+#data_check='\x00\x00\x00\x1b\x01\x40\x45\x4a\x4c\x20\x31\x32\x38\x34\x2e\x34\x0a\x40\x45\x4a\x4c\x20\x20\x20\x20\x20\x0a\x1b\x40\x1b\x40\x1b\x28\x52\x08\x00\x00\x52\x45\x4d\x4f\x54\x45\x31\x54\x49\x08\x00\x00\x07\xe8\x08\x1e\x07\x39\x0f\x4a\x53\x04\x00\x00\x00\x00\x00\x4e\x43\x02\x00\x00\x00\x1b\x00\x00\x00\x0d\x0a\x0d\x0a\x1b\x28\x52\x08\x00\x00\x52\x45\x4d\x4f\x54\x45\x31\x56\x49\x02\x00\x00\x00\x4c\x44\x00\x00\x1b\x00\x00\x00\x0c\x1b\x40\x1b\x40\x1b\x28\x52\x08\x00\x00\x52\x45\x4d\x4f\x54\x45\x31\x4a\x45\x01\x00\x00\x1b\x00\x00\x00'
+data_check=AAAAGwFARUpMIDEyODQuNApARUpMICAgICAKG0AbQBsoUggAAFJFTU9URTFUSQgAAAfoCB4HOQ9KUwQAAAAAAE5DAgAAABsAAAANCg0KGyhSCAAAUkVNT1RFMVZJAgAAAExEAAAbAAAADBtAG0AbKFIIAABSRU1PVEUxSkUBAAAbAAAA
+if [ ! "$force_clean" ]
+then
+
+	(
+		[ "$force_check" ] || read -sp "print a nozzle check page ? "
+		base64 -d <<< "$data_check" | netsend
+		echo $'\n'"page printing : please wait..."
+		sleep 10s
+	)
+
+fi
+
+
+# print heads cleaning and check page
+#data_clean='\x00\x00\x00\x1b\x01\x40\x45\x4a\x4c\x20\x31\x32\x38\x34\x2e\x34\x0a\x40\x45\x4a\x4c\x20\x20\x20\x20\x20\x0a\x1b\x40\x1b\x40\x1b\x28\x52\x08\x00\x00\x52\x45\x4d\x4f\x54\x45\x31\x54\x49\x08\x00\x00\x07\xe8\x08\x1e\x07\x3a\x06\x43\x48\x02\x00\x00\x00\x1b\x00\x00\x00'
+data_clean=AAAAGwFARUpMIDEyODQuNApARUpMICAgICAKG0AbQBsoUggAAFJFTU9URTFUSQgAAAfoCB4HOgZDSAIAAAAbAAAA
+[ "$force_clean" ] || read -sp "clean the print nozzles ? "
+echo $'\n'"cleaning in progress : please wait..."
+echo "(a nozzle check page will be printed after cleaning)"
+base64 -d <<< "$data_clean" | netsend
+base64 -d <<< "$data_check" | netsend
+
+
+# TODO touch the script to set the last cleanup
+
