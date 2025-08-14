@@ -3,10 +3,10 @@
 
 # this bash script allows you to check and clean the print heads of an
 # Epson EcoTank 2710 printer accessible via network (USB not supported).
-# the data sent to the printer (using the netsend function below) was
-# collected using tshark.
+# the data sent to the printer (using the netsend function below) was collected
+# using tshark tool (listening to the Epson utility installed on Windows).
 # tests have only been performed on the 2710 model : please let me know via
-# an issue if the script works on other models ;-)
+# an new issue if the script works on another model ;-)
 
 
 # use python
