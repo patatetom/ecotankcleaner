@@ -89,7 +89,7 @@ then
 		[ "$force_check" ] || read -sp "print a nozzle check page ? "
 		base64 -d <<< "$data_check" | netsend
 		echo $'\n'"page printing : please wait..."
-		sleep 10s
+		sleep 20s
 	)
 
 fi
