@@ -36,8 +36,6 @@ netsend() { cat -> /dev/tcp/${ecotank}/9100; }
 # netsend() { ncat -4 ${ecotank} 9100; }
 # uncomment next line to use gnu-netcat
 # netsend() { nc -4 -c ${ecotank} 9100; }
-# uncomment next line to debug
-netsend() { base64; }
 
 
 # user manual
