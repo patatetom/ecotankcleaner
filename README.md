@@ -13,9 +13,9 @@ Cleaning the print nozzles of an Epson EcoTank 2710 from Linux
 ## Installation
 
 - download `ecotankcleaner` bash script :
-> `wget  -O ~/.local/bin/ecotankcleaner  https://github.com/patatetom/ecotankcleaner/raw/refs/heads/main/ecotankcleaner`
+> `wget  -O ~/.local/bin/ecotankcleaner  https://raw.githubusercontent.com/patatetom/ecotankcleaner/main/ecotankcleaner`
 > or
-> `curl  -L  https://github.com/patatetom/ecotankcleaner/raw/refs/heads/main/ecotankcleaner  >  ~/.local/bin/ecotankcleaner`
+> `curl  https://raw.githubusercontent.com/patatetom/ecotankcleaner/main/ecotankcleaner  >  ~/.local/bin/ecotankcleaner`
 - check his simple code :
 > `less  ~/.local/bin/ecotankcleaner`
 - make it executable :
