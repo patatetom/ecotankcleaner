@@ -25,7 +25,7 @@ s.close()
 
 # use bash
 # comment next line to use python insteed of bash pseudo-device
-netsend() { cat -> /dev/tcp/${ecotank}/9100; }
+netsend() { cat ->/dev/tcp/${ecotank}/9100; }
 
 
 # uncomment next line to use socat
@@ -47,22 +47,26 @@ argument:
 options:
  -c prints a nozzle check page before cleaning
  -C starts cleaning the nozzles without a prior check page
+ -q ignore the last cleaning
 ~~~
 	exit 1
 }
 
 
 # global variables
+quiet=""
 force_check=""
 force_clean=""
 ecotank=""
 
+
 # option processing
-while getopts ":cC" option
+while getopts ":cCq" option
 do
 	case $option in
 		c) force_check="yes";;
 		C) force_clean="yes";;
+		q) quiet="yes";;
 		\?) usage;;
 	esac
 done
@@ -73,7 +77,7 @@ ecotank="$1"
 
 
 # simple connectivity test
-if ! ping -4 -c 1 -w 3 ${ecotank} &> /dev/null
+if ! ping -4 -c 1 -w 3 ${ecotank} &>/dev/null
 then
 	echo "error: ${ecotank} is not responding to ping" >&2
 	exit 1
@@ -95,6 +99,12 @@ then
 fi
 
 
+# warn on last cleanup
+now=$( date +%s )
+last=$( stat -c%Y "$0" )
+[ ! "$quiet" ] && [ $(( now - last )) -lt 2592000 ] && read -sp "last cleaning is less than a month ago: continue ? " && echo
+
+
 # print heads cleaning and check page
 readonly data_clean="AAAAGwFARUpMIDEyODQuNApARUpMICAgICAKG0AbQBsoUggAAFJFTU9URTFUSQgAAAfoCB4HOgZDSAIAAAAbAAAA"
 [ "$force_clean" ] || read -sp "clean the print nozzles ? "
@@ -104,5 +114,5 @@ base64 -d <<< "$data_clean" | netsend
 base64 -d <<< "$data_check" | netsend
 
 
-# TODO touch the script to set the last cleanup
-
+# set the last cleanup
+touch "$0" &>/dev/null
