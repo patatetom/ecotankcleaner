@@ -9,7 +9,7 @@ This bash script allows you to check and clean the print heads of an Epson EcoTa
 The data sent to the printer was collected using `tshark` tool (listening to the Epson utility installed on Windows).
 
 > [!TIP]
-> _Tests have only been performed on the 2710 model : please let me know via a [new issue](https://github.com/patatetom/ecotankcleaner/issues/new/choose) if the script works on another model._ 😉
+> _Tests have only been performed on the 2710 model : please let me know via a [new issue](https://github.com/patatetom/ecotankcleaner/issues/new/choose) if the script works on another EcoTank model._ 😉
 
 
 
