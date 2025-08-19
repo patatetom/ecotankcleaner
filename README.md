@@ -45,4 +45,4 @@ _or_<br/>
 > 
 > [bat](https://github.com/sharkdp/bat) is a `cat` clone with syntax highlighting and Git integration.
 > 
-> [Epson](https://download.ebz.epson.net/dsc/search/01/search/) driver download page.
+> [Epson](https://download.ebz.epson.net/dsc/search/01/search/searchModule?productName=2710&osCode=LX) driver download page.
