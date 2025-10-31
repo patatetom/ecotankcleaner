@@ -31,7 +31,7 @@ netsend() { cat ->/dev/tcp/${ecotank}/9100; }
 # uncomment next line to use socat
 # netsend() { socat -4 -u STDIN TCP:${ecotank}:9100; }
 # uncomment next line to use netcat-openbsd
-# netsend() { echo netcat -4 -N ${ecotank} 9100; }
+# netsend() { netcat -4 -N ${ecotank} 9100; }
 # uncomment next line to use netcat-nmap
 # netsend() { ncat -4 ${ecotank} 9100; }
 # uncomment next line to use gnu-netcat
